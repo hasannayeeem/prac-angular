@@ -1,0 +1,41 @@
+<nz-header>
+    <div class="logo">
+        <a routerLink="/"><img src="../assets/images/logo.png" alt=""></a>
+    </div>
+    <ul nz-menu nzTheme="dark" nzMode="horizontal" class="header-menu">
+        <li nz-menu-item nzSelected>
+            <app-cart><div class="cart">Cart<img src="../assets/images/cart.png" alt="" /></div></app-cart>
+        </li>
+        @if (user) {
+        <li nz-menu-item>
+            <div class="cart"><span></span><img src="../assets/images/avatar.png" alt="" /></div>
+        </li>
+        } @else {
+        <li nz-menu-item>
+            <div class="cart" routerlink="sign-in"><a routerLink="sign-in">Login</a></div>
+        </li>
+        }
+    </ul>
+    
+</nz-header>
+<!-- <nz-header>
+    <div class="logo">
+      <a routerLink="/"><img src="../assets/images/logo.png" alt="" /></a>
+    </div>
+    <ul nz-menu nzTheme="dark" nzMode="horizontal" class="header-menu">
+      <li nz-menu-item nzSelected>
+        <app-cart></app-cart>
+      </li>
+      <li *ngIf="user">
+        <div class="cart">
+          <span></span><img src="../assets/images/avatar.png" alt="" />
+        </div>
+      </li>
+      <li *ngIf="!user">
+        <div class="cart" routerLink="sign-in">
+          <a routerLink="sign-in">Login</a>
+        </div>
+      </li>
+    </ul>
+  </nz-header> -->
+  

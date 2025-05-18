@@ -1,0 +1,6 @@
+<div>
+    <button nz-button nzType="primary"><a [routerLink]="['products/', product.id]">View</a></button>
+    <button nz-button nzType="default">Edit</button>
+    <button nz-button nzDanger (click)="deleteProduct(product.id)">Delete</button>
+    <button nz-button nzType="default" (click)="addToCart(product)">Add to Cart</button>
+  </div>
