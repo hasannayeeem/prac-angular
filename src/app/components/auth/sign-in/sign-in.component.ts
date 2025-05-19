@@ -44,6 +44,7 @@ export class SignInComponent {
     });
 
     // Get returnUrl from route query
+    // this.route.snapshot.queryParamMap.get('returnUrl') || '/';
     this.route.queryParams.subscribe((params) => {
       this.returnUrl = params['returnUrl'] || '/';
     });

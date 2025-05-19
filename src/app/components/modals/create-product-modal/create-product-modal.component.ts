@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { AbstractControl, FormBuilder, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { Component, OnDestroy } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
@@ -7,8 +7,12 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzTimePickerModule } from 'ng-zorro-antd/time-picker'
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzInputModule } from 'ng-zorro-antd/input';
-import { Observable, Observer, Subject, takeUntil } from 'rxjs';
+import { Subscription, } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { ProductService } from '../../../services/product.services';
+import { Router } from '@angular/router';
+import { AuthService } from '../../../services/auth.services';
+import { Product } from '../../../models/product.type';
 @Component({
   selector: 'app-create-product-modal',
   standalone: true,
@@ -24,80 +28,69 @@ import { CommonModule } from '@angular/common';
   templateUrl: './create-product-modal.component.html',
   styleUrl: './create-product-modal.component.css'
 })
-export class CreateProductModalComponent {
-  isVisible = false;
-  isOkLoading = false;
-  private fb = inject(NonNullableFormBuilder);
-  private destroy$ = new Subject<void>();
-  validateForm = this.fb.group({
-    userName: this.fb.control('', [Validators.required], [this.userNameAsyncValidator]),
-    email: this.fb.control('', [Validators.email, Validators.required]),
-    password: this.fb.control('', [Validators.required]),
-    confirm: this.fb.control('', [this.confirmValidator]),
-    comment: this.fb.control('', [Validators.required])
-  });
+export class CreateProductModalComponent implements OnDestroy {
+  constructor(private productService: ProductService, private router: Router, private authService: AuthService){}
+
+  userSubscription?: Subscription;
+  permission = false;
+  isLoading = false;
+
   showModal(): void {
-    this.isVisible = true;
+    this.userSubscription = this.authService.isLoggedIn().subscribe((isLoggedIn) => {
+      if (isLoggedIn) {
+        this.permission = true;
+      } else {
+        this.router.navigate(['/login']);
+      }
+    });
   }
 
   handleOk(): void {
-    this.isOkLoading = true;
+    this.isLoading = true;
     setTimeout(() => {
-      this.isVisible = false;
-      this.isOkLoading = false;
-    }, 3000);
+      this.permission = false;
+      this.isLoading = false;
+    }, 1000);
   }
 
   handleCancel(): void {
-    this.isVisible = false;
+    this.permission = false;
   }
 
+  productForm = new FormGroup({
+    title: new FormControl('', { validators: [Validators.required] }),
+    description: new FormControl('', {
+      validators: [Validators.required],
+    }),
+    thumbnail: new FormControl('', { validators: [Validators.required] }),
+  });
 
-
-  ngOnInit(): void {
-    this.validateForm.controls.password.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      this.validateForm.controls.confirm.updateValueAndValidity();
+  onSubmit() {
+    if (this.productForm.invalid) return;
+    const newProduct: Partial<Product> = {
+      title: this.productForm.value.title || '',
+      description: this.productForm.value.description || '',
+      thumbnail: this.productForm.value.thumbnail || '',
+    };
+    this.isLoading = true;
+    this.productService.createProduct(newProduct).subscribe({
+      next: (createdProduct) => {
+        console.log('Created Product:', createdProduct);
+        this.productForm.reset();
+        this.isLoading = false;
+        this.permission = false;
+      },
+      error: (err) => {
+        console.error('Error creating product:', err);
+        this.isLoading = false;
+      }
     });
   }
+  
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  submitForm(): void {
-    console.log('submit', this.validateForm.value);
-  }
-
-  resetForm(e: MouseEvent): void {
-    e.preventDefault();
-    this.validateForm.reset();
-  }
-
-
-
-
-
-  userNameAsyncValidator(control: AbstractControl): Observable<ValidationErrors | null> {
-    return new Observable((observer: Observer<ValidationErrors | null>) => {
-      setTimeout(() => {
-        if (control.value === 'JasonWood') {
-          // you have to return `{error: true}` to mark it as an error event
-          observer.next({ error: true, duplicated: true });
-        } else {
-          observer.next(null);
-        }
-        observer.complete();
-      }, 1000);
-    });
-  }
-
-  confirmValidator(control: AbstractControl): ValidationErrors | null {
-    if (!control.value) {
-      return { error: true, required: true };
-    } else if (control.value !== this.validateForm.value.password) {
-      return { confirm: true, error: true };
+  ngOnDestroy() {
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
     }
-    return {};
   }
 }

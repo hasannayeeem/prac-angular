@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { ProductResolverService } from './components/products/product-details/product-resolver';
 import { ProductDetailsComponent } from './components/products/product-details/product-details.component';
 import { ProductsComponent } from './components/products/products/products.component';
+import { authGuard } from './components/auth/utils/auth.guard';
 
 export const routes: Routes = [
   { path: 'sign-in', component: SignInComponent },
@@ -21,10 +22,11 @@ export const routes: Routes = [
           { path: '', component: ProductsComponent },
           {
             path: 'products/:id', 
+            component: ProductDetailsComponent,
+            canActivate: [authGuard],
             resolve: {
               product: ProductResolverService
             }, 
-            component: ProductDetailsComponent
           },
         ]
       },

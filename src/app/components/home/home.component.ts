@@ -24,12 +24,11 @@ import { ProductDetailsComponent } from '../products/product-details/product-det
         NzMenuModule,
         CommonModule,
         NzLayoutModule,
-        TopbarComponent,
         NzBreadCrumbModule,
         ReactiveFormsModule,
         CategoriesComponent,
         HeaderComponent,
-        ProductDetailsComponent,
+        NzIconModule,
     ],
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.css']

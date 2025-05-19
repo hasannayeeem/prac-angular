@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { NzImageModule } from 'ng-zorro-antd/image';
 import { ActionsComponent } from '../actions/actions.component';
 import { CartService } from '../../../services/cart.service';
+import { EditProductComponent } from '../edit-product/edit-product.component';
 
 @Component({
   selector: 'app-product',
@@ -14,6 +15,7 @@ import { CartService } from '../../../services/cart.service';
     NzImageModule,
     CommonModule,
     ActionsComponent,
+    EditProductComponent
   ],
   templateUrl: './product.component.html',
   styleUrl: './product.component.css'

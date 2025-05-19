@@ -9,7 +9,6 @@ import { BASE_URL, USER_CREDENTIALS } from '../constants';
   providedIn: 'root',
 })
 export class AuthService {
-  private httpClient = inject(HttpClient);
   private router = inject(Router);
 
   private userSubject = new BehaviorSubject<User | null>(this.getUser());

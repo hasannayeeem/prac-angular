@@ -4,11 +4,12 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { CartService } from '../../../services/cart.service';
 import { Product } from '../../../models/product.type';
 import { ProductService } from '../../../services/product.services';
+import { EditProductComponent } from '../edit-product/edit-product.component';
 
 @Component({
   selector: 'product-actions',
   standalone: true,
-  imports: [NzButtonModule, RouterModule],
+  imports: [NzButtonModule, RouterModule, EditProductComponent],
   templateUrl: './actions.component.html',
   styleUrl: './actions.component.css'
 })
